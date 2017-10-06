@@ -59,7 +59,16 @@ namespace Sitecore.Support.Analytics.Pipelines.InsertRenderings
       Debug.ArgumentNotNull(contextItem, "contextItem");
       Debug.ArgumentNotNull(variableItem, "variableItem");
 
-      var combination = this.GetTestCombination(variableItem);      
+      TestCombination combination = null;
+      try
+      {
+        combination = this.GetTestCombination(variableItem);
+      }
+      catch (InvalidValueException ex)
+      {
+        var id = rendering.RenderingID ?? ID.Null;
+        Log.Warn($"Failed to execute MV testing on the component with ID '{id}' and Item ID: '{contextItem.ID}'.", ex, this);
+      }
 
       if (combination == null)
       {
